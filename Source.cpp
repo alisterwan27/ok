@@ -11,54 +11,53 @@ int main()
 	char tagColour;
 	int quantity, Gcounter=0, Bcounter=0;
 	double unitPrice, amountPayable, rate, sum=0;
-	ifstream inFile;
-	fstream file;
-	inFile.open("invoice.txt");
-	if (!inFile)
-		cout << "invoice.txt cannot be opened\n";
+	
+	ifstream invoice;
+	fstream summary;
+	
+	invoice.open("invoice.txt", ifstream::in);
+	summary.open("summary.txt", ofstream::out);
+	if (!invoice || !summary)	cout << "Error. Unable to open file." << endl;
 	else
 	{
-		cout << left;
-		cout << left << "Product Code" << setw(13) << "Unit Price" setw(13) << "Quantity" setw(13) << "Tag Colour" << setw(13) << "Disc Rate"
-			<< "Amount Payable" << endl;
-		while (!inFile.eof())
+		cout << left << fixed << setprecision(2);
+		cout << setw(13) << "Product Code" << setw(13) << "Unit Price" << setw(13) << "Quantity" << setw(13) << "Tag Colour" << setw(13) << "Disc Rate" << setw(13) << "Amount Payable" << endl;
+		while (!invoice.eof())
 		{
-			inFile >> productCode >> unitPrice >> quantity >> tagColour;
-			if (inFile.fail()) break
+			invoice >> productCode >> unitPrice >> quantity >> tagColour;
+			if (invoice.fail()) break;
 			else
 			{
-				if (unitPrice > 70 && tagColour = "B") rate = 0.25;
-				else if (unitPrice > 50 && tagColour = "G") rate = 0.15;
-				else rate = 0.12;
-
-				if (tagColour = "B") Bcounter++;
-				else Gcounter++;
+				if (unitPrice > 70 && tagColour == 'B')
+				{
+					rate = 0.25;
+					Bcounter += quantity;
+				}
+				else if (unitPrice > 50 && tagColour == 'G')
+				{
+					rate = 0.15;
+					Gcounter += quantity;
+				}
+				else
+				{
+					rate = 0.12;
+				}
 
 				amountPayable = unitPrice * quantity * (1 - rate);
 				sum += amountPayable;
-
-				cout << left;
-				cout << setw(13) << productCode << setw(13) << unitPrice << setw(13) << quantity << setw(13) << tagColour << setw(13) << rate
-					<< amountPayable << endl;
+				cout << setw(13) << productCode << setw(13) << unitPrice << setw(13) << quantity << setw(13) << tagColour << setw(13) << rate << amountPayable << endl;
 			}
-			cout << "Number of green tag product is " << Gcounter << endl;
+			cout << "\nNumber of green tag product is " << Gcounter << endl;
+			summary << "Number of green tag product is " << Gcounter << endl;
 			cout << "Number of blue tag product is " << Bcounter << endl;
+			summary << "Number of blue tag product is " << Bcounter<< endl;
 			cout << "Total amount payable is $" << sum << endl;
+			summary << "Total amount payable is $" << sum << endl;
+			
+			invoice.close();
+			summary.close();
 		}
 	}
-	inFile.close();
-
-	file.open("summary.txt", fstream::app);
-	if (!file)
-		cout << "Error\n";
-	else
-	{
-		file << "Number of green tag product is " << Gcounter << endl << "Number of blue tag product is " << Bcounter << endl << "Total amount payable is $" << sum << endl;
-	}
-	file.close();
-
-
-
 	system("pause");
 	return 0;
 }
